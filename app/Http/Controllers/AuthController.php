@@ -1,10 +1,4 @@
 <?php
-/**
- * User: Zura
- * Date: 12/19/2021
- * Time: 3:49 PM
- */
-
 namespace App\Http\Controllers;
 
 
@@ -74,4 +68,15 @@ class AuthController extends Controller
         ]);
     }
 
+    public function logout()
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        // Revoke the token that was used to authenticate the current request...
+        $user->currentAccessToken()->delete();
+
+        return response([
+            'success' => true
+        ]);
+    }
 }
