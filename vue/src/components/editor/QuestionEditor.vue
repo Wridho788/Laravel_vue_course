@@ -154,7 +154,7 @@
           type="text"
           v-model="option.text"
           @change="dataChange"
-          class="w-full rounded-md py-1 px-2 text-xs border border-gray-300 focus:border-indigo-500"
+          class="w-full rounded-sm py-1 px-2 text-xs border border-gray-300 focus:border-indigo-500"
         />
         <!-- Delete Option -->
         <button
@@ -164,7 +164,7 @@
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-3 w-3 text-red-700"
+            class="h-3 w-3 text-red-500"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -194,29 +194,18 @@ const props = defineProps({
   index: Number,
 });
 const emit = defineEmits(["change", "addQuestion", "deleteQuestion"]);
-const questionData = ref({ ...props.question });
+// Re-create the whole question data to avoid unintentional reference change
+const questionData = ref(JSON.parse(JSON.stringify(props.question)));
 // Get question types from vuex
 const questionTypes = computed(() => store.state.questionTypes);
 function upperCaseFirst(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
-function typeChange() {
-  if (shouldHaveOptions()) {
-    questionData.value.data = {
-      ...questionData.value.data,
-      options: [],
-    };
-  }
-  dataChange();
+function getOptions() {
+  return questionData.value.data.options;
 }
-// Emit the data change
-function dataChange() {
-  const data = JSON.parse(JSON.stringify(questionData.value));
-  if (!shouldHaveOptions()) {
-    delete data.data.options;
-  }
-  console.log(JSON.stringify(data, undefined, 2));
-  emit("change", data);
+function setOptions(options) {
+  questionData.value.data.options = options;
 }
 // Check if the question should have options
 function shouldHaveOptions() {
@@ -224,18 +213,27 @@ function shouldHaveOptions() {
 }
 // Add option
 function addOption() {
-  questionData.value.data.options = [
-    ...questionData.value.data.options,
-    { uuid: uuidv4(), text: "" },
-  ];
+  setOptions([...getOptions(), { uuid: uuidv4(), text: "" }]);
   dataChange();
 }
 // Remove option
 function removeOption(op) {
-  questionData.value.data.options = questionData.value.data.options.filter(
-    (opt) => opt !== op
-  );
+  setOptions(getOptions().filter((opt) => opt !== op));
   dataChange();
+}
+function typeChange() {
+  if (shouldHaveOptions()) {
+    setOptions(getOptions() || []);
+  }
+  dataChange();
+}
+// Emit the data change
+function dataChange() {
+  const data = questionData.value;
+  if (!shouldHaveOptions()) {
+    delete data.data.options;
+  }
+  emit("change", data);
 }
 function addQuestion() {
   emit("addQuestion", props.index + 1);
