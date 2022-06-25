@@ -134,7 +134,7 @@
       </DisclosurePanel>
     </Disclosure>
 
-    <router-view></router-view>
+    <router-view :key="$route.path"></router-view>
   </div>
 </template>
 
@@ -172,14 +172,13 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
-    
+
     function logout() {
-      store.dispatch("logout")
-        .then(() => {
-          router.push({
-            name: "Login",
-          });
+      store.dispatch("logout").then(() => {
+        router.push({
+          name: "Login",
         });
+      });
     }
     return {
       user: computed(() => store.state.user.data),
