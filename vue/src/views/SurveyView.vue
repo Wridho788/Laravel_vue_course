@@ -1,9 +1,33 @@
 <template>
   <div v-if="surveyLoading">Loading...</div>
-  <PageComponent
-    v-else
-    :title="surveyData.id ? surveyData.title : 'Create a Survey'"
-  >
+  <PageComponent v-else>
+    <template v-slot:header>
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold text-gray-900">
+          {{ model.id ? model.title : "Create a Survey" }}
+        </h1>
+        <button
+          v-if="model.id"
+          type="button"
+          @click="deleteSurvey()"
+          class="py-2 px-3 text-white bg-red-500 rounded-md hover:bg-red-600"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 -mt-1 inline-block"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Delete Survey
+        </button>
+      </div>
+    </template>
     <form @submit.prevent="saveSurvey">
       <div class="shadow sm:rounded-md sm:overflow-hidden">
         <!-- Survey Fields -->
@@ -15,9 +39,9 @@
             </label>
             <div class="mt-1 flex items-center">
               <img
-                v-if="surveyData.image"
-                :src="surveyData.image"
-                :alt="surveyData.title"
+                v-if="model.image"
+                :src="model.image"
+                :alt="model.title"
                 class="w-64 h-48 object-cover"
               />
               <span
@@ -60,7 +84,7 @@
               type="text"
               name="title"
               id="title"
-              v-model="surveyData.title"
+              v-model="model.title"
               autocomplete="survey_title"
               class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
             />
@@ -77,7 +101,7 @@
                 id="description"
                 name="description"
                 rows="3"
-                v-model="surveyData.description"
+                v-model="model.description"
                 autocomplete="survey_description"
                 class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
                 placeholder="Describe your survey"
@@ -97,7 +121,7 @@
               type="date"
               name="expire_date"
               id="expire_date"
-              v-model="surveyData.expire_date"
+              v-model="model.expire_date"
               class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
             />
           </div>
@@ -110,7 +134,7 @@
                 id="status"
                 name="status"
                 type="checkbox"
-                v-model="surveyData.status"
+                v-model="model.status"
                 class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
               />
             </div>
@@ -150,16 +174,10 @@
             </button>
             <!--/ Add new question -->
           </h3>
-          <div
-            v-if="!surveyData.questions.length"
-            class="text-center text-gray-600"
-          >
+          <div v-if="!model.questions.length" class="text-center text-gray-600">
             You don't have any questions created
           </div>
-          <div
-            v-for="(question, index) in surveyData.questions"
-            :key="question.id"
-          >
+          <div v-for="(question, index) in model.questions" :key="question.id">
             <QuestionEditor
               :question="question"
               :index="index"
@@ -195,7 +213,7 @@ const route = useRoute();
 // Get survey loading state, which only changes when we fetch survey from backend
 const surveyLoading = computed(() => store.state.currentSurvey.loading);
 // Create empty survey
-let surveyData = ref({
+let model = ref({
   title: "",
   status: false,
   description: null,
@@ -203,11 +221,11 @@ let surveyData = ref({
   expire_date: null,
   questions: [],
 });
-// Watch to current survey data change and when this happens we update local surveyData
+// Watch to current survey data change and when this happens we update local model
 watch(
   () => store.state.currentSurvey.data,
   (newVal, oldVal) => {
-    surveyData.value = {
+    model.value = {
       ...JSON.parse(JSON.stringify(newVal)),
       status: newVal.status !== "draft",
     };
@@ -225,15 +243,13 @@ function addQuestion(index) {
     description: null,
     data: {},
   };
-  surveyData.value.questions.splice(index, 0, newQuestion);
+  model.value.questions.splice(index, 0, newQuestion);
 }
 function deleteQuestion(question) {
-  surveyData.value.questions = surveyData.value.questions.filter(
-    (q) => q !== question
-  );
+  model.value.questions = model.value.questions.filter((q) => q !== question);
 }
 function questionChange(question) {
-  surveyData.value.questions = surveyData.value.questions.map((q) => {
+  model.value.questions = model.value.questions.map((q) => {
     if (q.id === question.id) {
       return JSON.parse(JSON.stringify(question));
     }
@@ -244,12 +260,25 @@ function questionChange(question) {
  * Create or update survey
  */
 function saveSurvey() {
-  store.dispatch("saveSurvey", surveyData.value).then(({ data }) => {
+  store.dispatch("saveSurvey", model.value).then(({ data }) => {
     router.push({
       name: "SurveyView",
       params: { id: data.data.id },
     });
   });
+}
+function deleteSurvey() {
+  if (
+    confirm(
+      `Are you sure you want to delete this survey? Operation can't be undone!!`
+    )
+  ) {
+    store.dispatch("deleteSurvey", model.value.id).then(() => {
+      router.push({
+        name: "Surveys",
+      });
+    });
+  }
 }
 </script>
 
