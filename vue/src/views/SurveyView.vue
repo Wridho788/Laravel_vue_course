@@ -14,16 +14,7 @@
                   </label>
                   <div class="mt-1 flex items-center">
                     <span
-                      class="
-                        flex
-                        items-center
-                        justify-center
-                        h-12
-                        w-12
-                        rounded-full
-                        overflow-hidden
-                        bg-gray-100
-                      "
+                      class="flex items-center justify-center h-12 w-12 rounded-full overflow-hidden bg-gray-100"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -40,38 +31,11 @@
                     </span>
                     <button
                       type="button"
-                      class="
-                        relative
-                        overflow-hidden
-                        ml-5
-                        bg-white
-                        py-2
-                        px-3
-                        border border-gray-300
-                        rounded-md
-                        shadow-sm
-                        text-sm
-                        leading-4
-                        font-medium
-                        text-gray-700
-                        hover:bg-gray-50
-                        focus:outline-none
-                        focus:ring-2
-                        focus:ring-offset-2
-                        focus:ring-indigo-500
-                      "
+                      class="relative overflow-hidden ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                       <input
                         type="file"
-                        class="
-                          absolute
-                          left-0
-                          top-0
-                          right-0
-                          bottom-0
-                          opacity-0
-                          cursor-pointer
-                        "
+                        class="absolute left-0 top-0 right-0 bottom-0 opacity-0 cursor-pointer"
                       />
                       Change
                     </button>
@@ -90,16 +54,7 @@
                     type="text"
                     name="title"
                     id="title"
-                    class="
-                      mt-1
-                      focus:ring-indigo-500 focus:border-indigo-500
-                      block
-                      w-full
-                      shadow-sm
-                      sm:text-sm
-                      border-gray-300
-                      rounded-md
-                    "
+                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                   />
                 </div>
                 <!--/ Title -->
@@ -117,16 +72,7 @@
                       id="description"
                       name="description"
                       rows="3"
-                      class="
-                        shadow-sm
-                        focus:ring-indigo-500 focus:border-indigo-500
-                        mt-1
-                        block
-                        w-full
-                        sm:text-sm
-                        border border-gray-300
-                        rounded-md
-                      "
+                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
                       placeholder="Describe your survey"
                     />
                   </div>
@@ -144,16 +90,7 @@
                     type="date"
                     name="expire_date"
                     id="expire_date"
-                    class="
-                      mt-1
-                      focus:ring-indigo-500 focus:border-indigo-500
-                      block
-                      w-full
-                      shadow-sm
-                      sm:text-sm
-                      border-gray-300
-                      rounded-md
-                    "
+                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                   />
                 </div>
                 <!--/ Expire Date -->
@@ -165,14 +102,7 @@
                       id="status"
                       name="status"
                       type="checkbox"
-                      class="
-                        focus:ring-indigo-500
-                        h-4
-                        w-4
-                        text-indigo-600
-                        border-gray-300
-                        rounded
-                      "
+                      class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
                     />
                   </div>
                   <div class="ml-3 text-sm">
@@ -189,33 +119,56 @@
               <!--/ Survey Fields -->
 
               <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
-                <h3 class="text-2xl font-semibold">Questions</h3>
-                <div v-for="(question, index) in survey.questions" :key="question.id">
-                  <QuestionEditor :question="question" :index="index" />
+                <h3
+                  class="text-2xl font-semibold flex items-center justify-between"
+                >
+                  Questions
+
+                  <!-- Add new question -->
+                  <button
+                    type="button"
+                    @click="addQuestion()"
+                    class="flex items-center text-sm py-1 px-4 rounded-sm text-white bg-gray-600 hover:bg-gray-700"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                    Add Question
+                  </button>
+                  <!--/ Add new question -->
+                </h3>
+                <div
+                  v-if="!survey.questions.length"
+                  class="text-center text-gray-600"
+                >
+                  You don't have any questions created
+                </div>
+                <div
+                  v-for="(question, index) in survey.questions"
+                  :key="question.id"
+                >
+                  <QuestionEditor
+                    :question="question"
+                    :index="index"
+                    @addQuestion="addQuestion"
+                    @deleteQuestion="deleteQuestion"
+                  />
                 </div>
               </div>
 
               <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
                 <button
                   type="submit"
-                  class="
-                    inline-flex
-                    justify-center
-                    py-2
-                    px-4
-                    border border-transparent
-                    shadow-sm
-                    text-sm
-                    font-medium
-                    rounded-md
-                    text-white
-                    bg-indigo-600
-                    hover:bg-indigo-700
-                    focus:outline-none
-                    focus:ring-2
-                    focus:ring-offset-2
-                    focus:ring-indigo-500
-                  "
+                  class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   Save
                 </button>
@@ -233,12 +186,24 @@ import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import store from "../store";
 import PageComponent from "../components/PageComponent.vue";
-import QuestionEditor from '../components/editor/QuestionEditor.vue'
+import QuestionEditor from "../components/editor/QuestionEditor.vue";
 const router = useRouter();
 const route = useRoute();
 const survey = computed(() =>
   store.state.surveys.find((s) => s.id === parseInt(route.params.id))
 );
+function addQuestion(index) {
+  const newQuestion = {
+    type: "text",
+    question: "",
+    description: null,
+    data: {},
+  };
+  survey.value.questions.splice(index, 0, newQuestion);
+}
+function deleteQuestion(question) {
+  survey.value.questions = survey.value.questions.filter((q) => q !== question);
+}
 </script>
 
 <style></style>
