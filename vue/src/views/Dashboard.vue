@@ -44,8 +44,10 @@
 <script setup>
 import { computed } from "@vue/reactivity";
 import { useStore } from "vuex";
+
 import PageComponent from "../components/PageComponent.vue";
 import SurveyListItem from "../components/SurveyListItem.vue";
+
 const store = useStore();
 const loading = computed(() => store.state.dashboard.loading);
 const data = computed(() => store.state.dashboard.data);
