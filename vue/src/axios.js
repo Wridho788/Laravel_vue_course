@@ -1,6 +1,6 @@
 import axios from "axios";
 import store from "./store";
-import { useRouter } from "vue-router";
+import router from "./router";
 
 const axiosClient = axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}/api`,
@@ -17,9 +17,10 @@ axiosClient.interceptors.response.use(
   },
   (error) => {
     if (error.response.status === 401) {
-      const router = useRouter();
       sessionStorage.removeItem("TOKEN");
       router.push({ name: "Login" });
+    } else if (error.response.status === 404) {
+      router.push({ name: "NotFound" });
     }
     return error;
   }

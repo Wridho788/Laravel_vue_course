@@ -82,6 +82,16 @@ class SurveyController extends Controller
      */
     public function showForGuest(Survey $survey)
     {
+        if (!$survey->status) {
+            return response("", 404);
+        }
+
+        $currentDate = new \DateTime();
+        $expireDate = new \DateTime($survey->expire_date);
+        if ($currentDate > $expireDate) {
+            return response("", 404);
+        }
+
         return new SurveyResource($survey);
     }
 
@@ -169,7 +179,7 @@ class SurveyController extends Controller
     public function storeAnswer(StoreSurveyAnswerRequest $request, Survey $survey)
     {
         $validated = $request->validated();
-        //        var_dump($validated, $survey);
+//        var_dump($validated, $survey);
 
         $surveyAnswer = SurveyAnswer::create([
             'survey_id' => $survey->id,
@@ -193,6 +203,7 @@ class SurveyController extends Controller
         }
 
         return response("", 201);
+
     }
 
     /**

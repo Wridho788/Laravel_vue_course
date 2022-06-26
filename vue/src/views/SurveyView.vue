@@ -255,7 +255,7 @@ watch(
   (newVal, oldVal) => {
     model.value = {
       ...JSON.parse(JSON.stringify(newVal)),
-      status: newVal.status !== "draft",
+      status: !!newVal.status,
     };
   }
 );
