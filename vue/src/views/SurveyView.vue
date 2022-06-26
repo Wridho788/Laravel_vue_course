@@ -1,13 +1,12 @@
 <template>
-  <div v-if="surveyLoading">Loading...</div>
-  <PageComponent v-else>
+  <PageComponent>
     <template v-slot:header>
       <div class="flex items-center justify-between">
         <h1 class="text-3xl font-bold text-gray-900">
-          {{ model.id ? model.title : "Create a Survey" }}
+          {{ route.params.id ? model.title : "Create a Survey" }}
         </h1>
         <button
-          v-if="model.id"
+          v-if="route.params.id"
           type="button"
           @click="deleteSurvey()"
           class="py-2 px-3 text-white bg-red-500 rounded-md hover:bg-red-600"
@@ -28,7 +27,8 @@
         </button>
       </div>
     </template>
-    <form @submit.prevent="saveSurvey">
+    <div v-if="surveyLoading" class="flex justify-center">Loading...</div>
+    <form v-else @submit.prevent="saveSurvey" class="animate-fade-in-down">
       <div class="shadow sm:rounded-md sm:overflow-hidden">
         <!-- Survey Fields -->
         <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
@@ -218,7 +218,7 @@ let model = ref({
   title: "",
   status: false,
   description: null,
-  // image: null,
+  image: null,
   image_url: null,
   expire_date: null,
   questions: [],
@@ -247,7 +247,7 @@ function onImageChoose(ev) {
     model.value.image_url = reader.result;
     ev.target.value = "";
   };
- reader.readAsDataURL(file)
+  reader.readAsDataURL(file);
 }
 function addQuestion(index) {
   const newQuestion = {
@@ -279,7 +279,11 @@ function questionChange(question) {
  * Create or update survey
  */
 function saveSurvey() {
-  store.dispatch("saveSurvey", model.value).then(({ data }) => {
+  store.dispatch("saveSurvey", { ...model.value }).then(({ data }) => {
+    store.commit("notify", {
+      type: "success",
+      message: "The survey was successfully updated",
+    });
     router.push({
       name: "SurveyView",
       params: { id: data.data.id },

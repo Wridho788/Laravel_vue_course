@@ -25,7 +25,7 @@ class SurveyController extends Controller
     {
         $user = $request->user();
 
-        return SurveyResource::collection(Survey::where('user_id', $user->id)->paginate());
+        return SurveyResource::collection(Survey::where('user_id', $user->id)->orderBy('created_at', 'DESC')->paginate(10));
     }
 
     /**
@@ -141,6 +141,11 @@ class SurveyController extends Controller
         }
 
         $survey->delete();
+        // If there is an old image, delete it
+        if ($survey->image) {
+            $absolutePath = public_path($survey->image);
+            File::delete($absolutePath);
+        }
 
         return response('', 204);
     }
