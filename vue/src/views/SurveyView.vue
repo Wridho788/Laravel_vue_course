@@ -39,8 +39,8 @@
             </label>
             <div class="mt-1 flex items-center">
               <img
-                v-if="model.image"
-                :src="model.image"
+                v-if="model.image_url"
+                :src="model.image_url"
                 :alt="model.title"
                 class="w-64 h-48 object-cover"
               />
@@ -67,6 +67,7 @@
               >
                 <input
                   type="file"
+                  @change="onImageChoose"
                   class="absolute left-0 top-0 right-0 bottom-0 opacity-0 cursor-pointer"
                 />
                 Change
@@ -205,12 +206,10 @@
 import { v4 as uuidv4 } from "uuid";
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-
 import store from "../store";
 import PageComponent from "../components/PageComponent.vue";
 import QuestionEditor from "../components/editor/QuestionEditor.vue";
 const router = useRouter();
-
 const route = useRoute();
 // Get survey loading state, which only changes when we fetch survey from backend
 const surveyLoading = computed(() => store.state.currentSurvey.loading);
@@ -220,6 +219,7 @@ let model = ref({
   status: false,
   description: null,
   image: null,
+  image_url: null,
   expire_date: null,
   questions: [],
 });
@@ -236,6 +236,18 @@ watch(
 // If the current component is rendered on survey update route we make a request to fetch survey
 if (route.params.id) {
   store.dispatch("getSurvey", route.params.id);
+}
+function onImageChoose(ev) {
+  const file = ev.target.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    // The field to send on backend and apply validations
+    model.value.image = reader.result;
+    // The field to display here
+    model.value.image_url = reader.result;
+    ev.target.value = "";
+  };
+ reader.readAsDataURL(file)
 }
 function addQuestion(index) {
   const newQuestion = {
