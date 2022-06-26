@@ -48,16 +48,16 @@ const store = createStore({
       });
     },
     getDashboardData({ commit }) {
-      commit("startDashboardLoading", true);
+      commit("dashboardLoading", true);
       return axiosClient
         .get(`/dashboard`)
         .then((res) => {
-          commit("startDashboardLoading", false);
+          commit("dashboardLoading", false);
           commit("setDashboardData", res.data);
           return res;
         })
         .catch((error) => {
-          commit("startDashboardLoading", false);
+          commit("dashboardLoading", false);
           return error;
         });
     },
@@ -139,7 +139,7 @@ const store = createStore({
       state.user.data = userData.user;
       sessionStorage.setItem("TOKEN", userData.token);
     },
-    startDashboardLoading: (state, loading) => {
+    dashboardLoading: (state, loading) => {
       state.dashboard.loading = loading;
     },
     setDashboardData: (state, data) => {
