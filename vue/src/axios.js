@@ -22,7 +22,7 @@ axiosClient.interceptors.response.use(
     } else if (error.response.status === 404) {
       router.push({ name: "NotFound" });
     }
-    return error;
+    throw error;
   }
 );
 

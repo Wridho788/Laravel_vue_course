@@ -136,6 +136,7 @@ import store from "../store";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import Alert from "../components/Alert.vue";
+
 const router = useRouter();
 const user = {
   email: "",
@@ -143,6 +144,7 @@ const user = {
 };
 let loading = ref(false);
 let errorMsg = ref("");
+
 function login(ev) {
   ev.preventDefault();
   loading.value = true;
@@ -150,13 +152,18 @@ function login(ev) {
     .dispatch("login", user)
     .then(() => {
       loading.value = false;
+      console.log(() =>
+        router.push({
+          name: "Dashboard",
+        })
+      );
       router.push({
         name: "Dashboard",
       });
     })
     .catch((err) => {
       loading.value = false;
-      errorMsg.value = err.response.data.error;
+      errorMsg.value = err.response.data.message;
     });
 }
 </script>
