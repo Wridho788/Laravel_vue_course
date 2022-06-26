@@ -20,6 +20,17 @@
     </p>
   </div>
   <form class="mt-8 space-y-6" @submit="register">
+    <Alert
+      v-if="Object.keys(errors).length"
+      class="flex-col items-stretch text-sm"
+    >
+      <div v-for="(field, i) of Object.keys(errors)" :key="i">
+        <div v-for="(error, ind) of errors[field] || []" :key="ind">
+          * {{ error }}
+        </div>
+      </div>
+    </Alert>
+
     <input type="hidden" name="remember" value="true" />
     <div class="rounded-md shadow-sm -space-y-px">
       <div>
@@ -45,6 +56,7 @@
           required=""
           v-model="user.email"
           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+          :class="{ 'border-red-500': errors.email, 'z-10': errors.email }"
           placeholder="Email address"
         />
       </div>
@@ -59,6 +71,10 @@
           v-model="user.password"
           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
           placeholder="Password"
+          :class="{
+            'border-red-500': errors.password,
+            'z-10': errors.password,
+          }"
         />
       </div>
       <div>
@@ -124,6 +140,7 @@ import { ref } from "vue";
 import { LockClosedIcon } from "@heroicons/vue/solid";
 import store from "../store";
 import { useRouter } from "vue-router";
+import Alert from "../components/Alert.vue";
 const router = useRouter();
 const user = {
   name: "",
@@ -131,6 +148,7 @@ const user = {
   password: "",
 };
 const loading = ref(false);
+const errors = ref({});
 function register(ev) {
   ev.preventDefault();
   loading.value = true;
@@ -142,8 +160,11 @@ function register(ev) {
         name: "Dashboard",
       });
     })
-    .catch(() => {
+    .catch((error) => {
       loading.value = false;
+      if (error.response.status === 422) {
+        errors.value = error.response.data.errors;
+      }
     });
 }
 </script>
