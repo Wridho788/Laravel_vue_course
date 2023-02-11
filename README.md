@@ -38,6 +38,11 @@ You need to have PHP version **8.0** or above. Node.js version **12.0** or above
 4. Start frontend by running `npm run dev`
 5. Open http://localhost:3000
 
+### UI DESIGN
+<img width="2236" alt="Screen Shot 2023-02-11 at 11 52 16" src="https://user-images.githubusercontent.com/25151124/218240856-376547d1-4fc1-49d6-a01c-5f0913c57f15.png">
+<img width="2168" alt="Screen Shot 2023-02-11 at 11 52 31" src="https://user-images.githubusercontent.com/25151124/218240868-c8303329-4e53-41c0-960d-9c4c99ffaf10.png">
+
+
 
 ## License
 
